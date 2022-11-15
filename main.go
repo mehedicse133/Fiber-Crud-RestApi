@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 )
 
 type Todo struct {
@@ -15,9 +16,24 @@ type Todo struct {
 var todos = []*Todo{}
 
 func main() {
-	app := fiber.New()
+	//app := fiber.New()
+
+	// Initialize standard Go html template engine
+	engine := html.New("./template", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+	app.Static("/", "./static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
+		// Render index template
+		return c.Render("index", fiber.Map{
+			"Title": "Hello, World!",
+		})
+	})
+
+	app.Get("/get-todos", func(c *fiber.Ctx) error {
 		return c.JSON(todos)
 	})
 
